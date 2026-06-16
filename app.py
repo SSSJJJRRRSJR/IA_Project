@@ -1,9 +1,18 @@
 import streamlit as st
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+font_path = 'simhei.ttc'
+if os.path.exists(font_path):
+    fm.fontManager.addfont(font_path)
+    prop = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = prop.get_name()
+else:
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
+plt.rcParams['axes.unicode_minus'] = False
 import seaborn as sns
 from sklearn.cluster import KMeans
-import os
 import datetime
 import matplotlib.font_manager as fm
 import re
@@ -296,11 +305,14 @@ def page_merchant_login():
                     if user_exists: 
                         st.error(t("账号已存在！请直接选择登录。", "Account already exists! Please choose Login."))
                     else:
-                        pd.DataFrame([{"username": user_str, "password": pwd_str}]).to_csv(CRED_FILE, mode='a', header=False, index=False, encoding='utf-8-sig')
+                        pd.DataFrame([{'username': user_str, 'password': pwd_str}]).to_csv(CRED_FILE, mode='a', header=False, index=False, encoding='utf-8')
                         st.session_state.merchant_category = to_zh(cat)
-                        st.success(t("注册成功！正在进入系统...", "Registration successful! Entering system..."))
+                        st.success(t("注册成功！正在进入系统！", "Registration successful! Entering system!"))
+                        import time
+                        time.sleep(1)
                         switch_page('merchant_dashboard')
-
+                        st.rerun() 
+                                                                               
 def page_public_info():
     st.title(t("公众市场调研 - 基础信息", "Public Market Survey - Basic Info"))
     gender = st.selectbox(t("您的性别", "Your Gender"), [t("女", "Female"), t("男", "Male")], index=None)
